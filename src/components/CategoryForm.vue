@@ -14,7 +14,7 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
 import { showSuccess, showError } from '../utils/swal'
-import { createCategory } from '../services/categoryService'
+import { createCategory } from '../services/CategoryService'
 
 const emit = defineEmits(['category-added'])
 
