@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/auth'
 import LoginPage from '../views/LoginPage.vue'
 import DashboardPage from '../views/DashboardPage.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
-import Users from '../views/Users.vue'
+import UsersPage from '../views/UsersPage.vue'
 import ProductsPage from '../views/ProductsPage.vue'
 
 const routes = [
@@ -14,7 +14,7 @@ const routes = [
   { path: '/dashboard', component: AdminLayout,
     children: [
       { path: '', component: DashboardPage },
-      { path : '/users', component: Users },
+      { path : '/users', component: UsersPage },
       { path : '/products', component: ProductsPage },
     ]
   }

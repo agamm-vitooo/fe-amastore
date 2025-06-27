@@ -61,12 +61,13 @@ onUnmounted(() => {
   left: 0;
   height: 100vh;
   width: 200px;
-  background: #222;
-  color: #fff;
+  background: #f8f9fa; /* abu muda lembut */
+  color: #343a40; /* abu gelap */
   display: flex;
   flex-direction: column;
   transition: width 0.3s;
   padding: 0.5rem;
+  border-right: 1px solid #dee2e6;
 }
 
 .sidebar.collapsed {
@@ -78,6 +79,9 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #343a40;
 }
 
 .sidebar-menu {
@@ -94,20 +98,30 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #fff;
+  color: #343a40;
   text-decoration: none;
   padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-menu a:hover {
+  background-color: #e2e6ea; /* abu hover */
 }
 
 .sidebar-menu a.active {
-  background-color: #0d6efd;
+  background-color: #0d6efd; /* biru modern */
+  color: #fff;
+}
+
+.sidebar-menu a.active i {
+  color: #fff;
 }
 
 .sidebar-toggle {
-  background: none;
+  background: #ced4da; /* tombol toggle abu terang */
   border: none;
-  color: #fff;
+  color: #343a40;
   font-size: 1.25rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
@@ -116,6 +130,6 @@ onUnmounted(() => {
 }
 
 .sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #adb5bd;
 }
 </style>
