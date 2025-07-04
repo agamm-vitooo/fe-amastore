@@ -1,7 +1,5 @@
-import axios from 'axios'
-
-const BASE_URL = 'https://be-amastore.vercel.app/api/upload'
-const getToken = () => localStorage.getItem('admin_token')
+// services/uploadService.js
+import api from './Api'
 
 const uploadFile = async (endpoint, file, fieldName = 'image') => {
   if (!file) throw new Error('File tidak ditemukan')
@@ -9,22 +7,19 @@ const uploadFile = async (endpoint, file, fieldName = 'image') => {
   const formData = new FormData()
   formData.append(fieldName, file)
 
-  const res = await axios.post(`${BASE_URL}/${endpoint}`, formData, {
+  const res = await api.post(`/upload/${endpoint}`, formData, {
     headers: {
-      Authorization: `Bearer ${getToken()}`,
-      'Content-Type': 'multipart/form-data'
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   })
 
-  return res.data.data.image_url // asumsikan response standar
+  return res.data.data.image_url
 }
 
-// 🔼 Gunakan helper `uploadFile()` di bawah ini
-
 export const uploadProductImage = async (file) => {
-  return await uploadFile('product', file, 'image')
+  return await uploadFile('product', file)
 }
 
 export const uploadAvatarImage = async (file) => {
-  return await uploadFile('avatar', file, 'image')
+  return await uploadFile('avatar', file)
 }

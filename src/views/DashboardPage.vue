@@ -38,7 +38,7 @@ onMounted(async () => {
 
   if (!auth.user) {
     try {
-      const res = await axios.get('https://be-amastore.vercel.app/api/profile', {
+      const res = await axios.get('http://localhost:3000/profile', {
         headers: { Authorization: `Bearer ${auth.token}` },
       })
       auth.setUser(res.data.data)

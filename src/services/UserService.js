@@ -1,41 +1,37 @@
-import axios from 'axios'
+// services/clientService.js
+import api from './Api'
 
-const API = 'https://be-amastore.vercel.app/api/clients'
-
-export const registerClient = async (data) => {
-  const token = localStorage.getItem('admin_token')
-  const res = await axios.post('https://be-amastore.vercel.app/api/clients/register', data, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-  return res.data
-}
-
+// ✅ Ambil semua client
 export const getAllClients = async () => {
-  const token = localStorage.getItem('admin_token')
-  const res = await axios.get(API, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  const res = await api.get('/clients')
   return res.data.data
 }
 
-export const deleteClient = async (id) => {
-  const token = localStorage.getItem('admin_token')
-  return await axios.delete(`${API}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+// ✅ Tambah client (oleh admin)
+export const registerClient = async (data) => {
+  const res = await api.post('/clients/register', data)
+  return res.data
 }
 
+// ✅ Hapus client
+export const deleteClient = async (id) => {
+  return await api.delete(`/clients/${id}`)
+}
+
+// ✅ Update client
 export const updateClient = async (id, data) => {
-  const token = localStorage.getItem('admin_token')
-  return await axios.put(`${API}/${id}`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+  return await api.put(`/clients/${id}`, data)
+}
+
+// 🔍 Ambil detail client by ID
+export const getClientById = async (id) => {
+  const res = await api.get(`/clients/${id}`)
+  return res.data.data
+}
+
+// 🔄 Reset password client (opsional)
+export const resetClientPassword = async (id, newPassword) => {
+  return await api.put(`/clients/${id}/reset-password`, {
+    password: newPassword,
   })
 }

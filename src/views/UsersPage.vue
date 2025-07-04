@@ -1,4 +1,4 @@
-// UserPage.vue
+<!-- UserPage.vue -->
 <template>
   <div class="container mt-4 px-2 px-sm-3">
     <h2 class="mb-4">Manajemen User</h2>
@@ -19,8 +19,10 @@ import {
   getAllClients,
   registerClient,
   updateClient,
-  deleteClient
+  deleteClient,
+  getClientById
 } from '../services/UserService'
+
 import { showSuccess, showError, showConfirm } from '../utils/swal'
 
 const users = ref([])
@@ -46,10 +48,15 @@ const handleCreate = async (user) => {
   }
 }
 
-const openEditModal = (user) => {
-  editedUser.value = { ...user }
-  currentUserId.value = user._id
-  editModalRef.value.show()
+const openEditModal = async (user) => {
+  try {
+    const detail = await getClientById(user._id)
+    editedUser.value = { ...detail }
+    currentUserId.value = user._id
+    editModalRef.value.show()
+  } catch {
+    showError('Gagal membuka data user')
+  }
 }
 
 const handleUpdate = async (updatedUser) => {

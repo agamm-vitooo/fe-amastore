@@ -1,4 +1,3 @@
-// src/utils/swal.js
 import Swal from 'sweetalert2'
 
 export const showSuccess = (title = 'Success', text = '') => {
@@ -28,7 +27,7 @@ export const showConfirm = async (text = 'Kamu yakin?', confirmButtonText = 'Ya'
     confirmButtonColor: '#d33',
     cancelButtonColor: '#6c757d',
     confirmButtonText,
-    cancelButtonText: 'Batal'
+    cancelButtonText: 'Batal',
   })
   return result.isConfirmed
 }

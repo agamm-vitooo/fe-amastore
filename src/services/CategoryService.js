@@ -1,23 +1,14 @@
-import axios from 'axios'
-
-const API = 'https://be-amastore.vercel.app/api/categories'
-const token = () => localStorage.getItem('admin_token')
+// src/services/categoryService.js
+import api from './Api'
 
 // GET semua kategori
 export const getAllCategories = async () => {
-  const res = await axios.get(API, {
-    headers: {
-      Authorization: `Bearer ${token()}`
-    }
-  })
+  const res = await api.get('/categories')
   return res.data.data
 }
 
 // POST buat kategori baru
 export const createCategory = async (data) => {
-  return await axios.post(API, data, {
-    headers: {
-      Authorization: `Bearer ${token()}`
-    }
-  })
+  const res = await api.post('/categories', data)
+  return res.data
 }

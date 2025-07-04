@@ -1,115 +1,111 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { getAllProducts, deleteProduct } from '../services/ProductService'
-import { showError, showSuccess, showConfirm } from '../utils/swal'
-import ProductForm from '../components/ProductForm.vue'
+import { ref, onMounted } from 'vue'
+import { Modal } from 'bootstrap'
+
+import UnifiedModal from '../components/Modal.vue'
 import ProductList from '../components/ProductList.vue'
-import CategoryForm from '../components/CategoryForm.vue'
+
+import { getAllProducts, deleteProduct } from '../services/ProductService'
+import { getAllCategories } from '../services/CategoryService'
 
 const products = ref([])
-const showProductForm = ref(false)
-const showCategoryForm = ref(false)
-const editedProduct = ref(null)
+const categories = ref([])
+const formData = ref({})
+const modalMode = ref('product') // 'product' atau 'category'
 
-const page = ref(1)
-const limit = 10
-const isLoading = ref(false)
-const isEnd = ref(false)
-
+// Fetch Produk dan Kategori
 const fetchProducts = async () => {
-  if (isLoading.value || isEnd.value) return
-  isLoading.value = true
-
-  try {
-    const fetched = await getAllProducts(page.value, limit)
-    products.value.push(...fetched)
-
-    if (fetched.length < limit) isEnd.value = true
-    page.value++
-  } catch (err) {
-    showError('Gagal memuat produk')
-    console.error(err)
-  } finally {
-    isLoading.value = false
-  }
+  const data = await getAllProducts()
+  products.value = data
+  formData.value = {}
 }
 
-const handleDelete = async (id) => {
-  const confirmed = await showConfirm('Yakin ingin hapus produk ini?')
-  if (!confirmed) return
-  try {
+const fetchCategories = async () => {
+  const data = await getAllCategories()
+  categories.value = data
+}
+
+// Tampilkan Modal Tambah Produk
+const openAddProduct = () => {
+  formData.value = {}
+  modalMode.value = 'product'
+  showModal()
+}
+
+// Tampilkan Modal Tambah Kategori
+const openAddCategory = () => {
+  formData.value = {}
+  modalMode.value = 'category'
+  showModal()
+}
+
+// Edit Produk
+const setEdit = (product) => {
+  formData.value = { ...product }
+  modalMode.value = 'product'
+  showModal()
+}
+
+// Tampilkan Modal Bootstrap
+const showModal = () => {
+  const el = document.getElementById('unifiedModal')
+  const modal = Modal.getOrCreateInstance(el)
+  modal.show()
+}
+
+// Hapus Produk
+const deleteProductById = async (id) => {
+  if (confirm('Yakin ingin menghapus produk ini?')) {
     await deleteProduct(id)
-    showSuccess('Produk berhasil dihapus')
-    products.value = []
-    page.value = 1
-    isEnd.value = false
     fetchProducts()
-  } catch {
-    showError('Gagal menghapus produk')
   }
 }
 
-const handleEdit = (product) => {
-  editedProduct.value = { ...product }
-  showProductForm.value = true
+// Handler saat modal disimpan
+const onSaved = () => {
+  if (modalMode.value === 'product') fetchProducts()
+  else fetchCategories()
 }
 
-const onProductAddedOrUpdated = () => {
-  showProductForm.value = false
-  editedProduct.value = null
-  products.value = []
-  page.value = 1
-  isEnd.value = false
-  fetchProducts()
+// Handler ganti mode di dalam modal (dari produk ke kategori)
+const handleSwitchMode = (mode) => {
+  modalMode.value = mode
+  formData.value = {}
+  showModal()
 }
 
-const onCategoryAdded = () => {
-  showCategoryForm.value = false
-}
-
-const handleScroll = () => {
-  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200
-  if (nearBottom) fetchProducts()
-}
-
+// Load data saat halaman dimuat
 onMounted(() => {
   fetchProducts()
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  fetchCategories()
 })
 </script>
 
 <template>
-  <div class="container mt-4">
-    <div class="d-flex gap-2 mb-3">
-      <button class="btn btn-primary" @click="showProductForm = !showProductForm">
-        {{ showProductForm ? 'Tutup Form Produk' : 'Tambah Produk' }}
-      </button>
-      <button class="btn btn-secondary" @click="showCategoryForm = !showCategoryForm">
-        {{ showCategoryForm ? 'Tutup Form Kategori' : 'Tambah Kategori' }}
-      </button>
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Manajemen Produk</h2>
+      <div>
+        <button class="btn btn-success me-2" @click="openAddProduct">+ Tambah Produk</button>
+        <button class="btn btn-outline-primary" @click="openAddCategory">+ Tambah Kategori</button>
+      </div>
     </div>
 
-    <ProductForm
-      v-if="showProductForm"
-      :initialData="editedProduct"
-      @product-added="onProductAddedOrUpdated"
-      @product-updated="onProductAddedOrUpdated"
+    <!-- Modal Gabungan Produk & Kategori -->
+    <UnifiedModal
+      :initialData="formData"
+      :mode="modalMode"
+      :categories="categories"
+      @saved="onSaved"
+      @switchMode="handleSwitchMode"
     />
-    <CategoryForm v-if="showCategoryForm" @category-added="onCategoryAdded" />
+
+    <!-- List Produk -->
     <ProductList
       :products="products"
-      @delete="handleDelete"
-      @edit="handleEdit"
-      @product-updated="fetchProducts"
+      @edit="setEdit"
+      @delete="deleteProductById"
     />
-    
-    <div v-if="isLoading" class="text-center my-3">
-      <div class="spinner-border" role="status"></div>
-    </div>
-    <div v-if="isEnd" class="text-muted text-center my-4">Semua produk telah dimuat.</div>
   </div>
 </template>
